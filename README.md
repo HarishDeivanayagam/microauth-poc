@@ -1,12 +1,8 @@
-# =============================================================================
 # Starting the server
-# =============================================================================
 ```
 go run cmd/server/main.go
 ```
-# =============================================================================
 # Migrations
-# =============================================================================
 
 ## To install golang migrate
 ```
@@ -22,5 +18,3 @@ migrate create -ext sql -dir migrations -seq init_table
 ```
 migrate -source migrations -database migrate -path migrations -database postgres://postgres:root@localhost:5432/microauth?sslmode=disable up
 ```
-
-# =============================================================================
