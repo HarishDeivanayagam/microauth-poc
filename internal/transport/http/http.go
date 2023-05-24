@@ -5,14 +5,23 @@ import (
 )
 
 type Http struct {
-	server      *echo.Echo
-	userService UserService
+	server              *echo.Echo
+	userService         UserService
+	organizationService OrganizationService
+	memberService       MemberService
 }
 
-func New(userService UserService) *Http {
+var (
+	InvalidRequestBody  = "invalid request body"
+	InternalServerError = "some error happened"
+)
+
+func New(userService UserService, organizationService OrganizationService, memberService MemberService) *Http {
 	return &Http{
-		userService: userService,
-		server:      echo.New(),
+		userService:         userService,
+		organizationService: organizationService,
+		memberService:       memberService,
+		server:              echo.New(),
 	}
 }
 
@@ -25,4 +34,12 @@ func (h *Http) Start(port string) {
 func (h *Http) RegisterHandlers() {
 	h.server.POST("/api/v1/users/signup", h.SignupHandler)
 	h.server.POST("/api/v1/users/login", h.LoginHandler)
+
+	// authenticated requests
+	authenticated := h.server.Group("/api/v1")
+	authenticated.Use(h.JWTMiddleware)
+	authenticated.GET("/organizations", h.FetchOrganizationsHandler)
+	authenticated.POST("/organizations", h.CreateOrganizationHandler)
+	authenticated.GET("/organizations/:organizationID/members/me", h.FetchAllMembersHandler)
+	authenticated.GET("/organizations/:organizationID/members", h.FetchMemberHandler)
 }

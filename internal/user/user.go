@@ -42,7 +42,7 @@ type Service struct {
 	store UserStore
 }
 
-func NewService(store UserStore) *Service {
+func New(store UserStore) *Service {
 	return &Service{
 		store: store,
 	}

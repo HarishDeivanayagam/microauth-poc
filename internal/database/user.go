@@ -9,10 +9,6 @@ import (
 	"microauth.io/core/internal/user"
 )
 
-var (
-	NewUserInserted = "new user inserted"
-)
-
 type UserRow struct {
 	ID              string `db:"id"`
 	FirstName       string `db:"first_name"`
@@ -48,10 +44,11 @@ func (db *Database) GetUserByEmail(ctx context.Context, email string) (user.User
 }
 
 func (db *Database) InsertUser(ctx context.Context, firstName string, lastName string, email string, password string, isEmailVerified bool) (string, error) {
-	_, err := db.client.ExecContext(ctx, "INSERT INTO public.users (id, first_name, last_name, email, is_email_verified, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", uuid.New().String(), firstName, lastName, email, isEmailVerified, password, time.Now().Unix(), time.Now().Unix())
+	userID := uuid.New().String()
+	_, err := db.client.ExecContext(ctx, "INSERT INTO public.users (id, first_name, last_name, email, is_email_verified, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", userID, firstName, lastName, email, isEmailVerified, password, time.Now().Unix(), time.Now().Unix())
 	if err != nil {
 		log.Println(err)
 		return "", err
 	}
-	return NewUserInserted, nil
+	return userID, nil
 }

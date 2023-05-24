@@ -4,6 +4,8 @@ import (
 	"log"
 
 	"microauth.io/core/internal/database"
+	"microauth.io/core/internal/member"
+	"microauth.io/core/internal/organization"
 	"microauth.io/core/internal/transport/http"
 	"microauth.io/core/internal/user"
 )
@@ -17,8 +19,10 @@ func main() {
 		log.Println(err)
 		log.Fatalln("error connecting to db")
 	}
-	userService := user.NewService(db)
-	httpServer := http.New(userService)
+	userService := user.New(db)
+	organizationService := organization.New(db)
+	memberService := member.New(db)
+	httpServer := http.New(userService, organizationService, memberService)
 	httpServer.RegisterHandlers()
 	httpServer.Start(port)
 }

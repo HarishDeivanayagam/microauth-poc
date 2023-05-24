@@ -9,7 +9,6 @@ import (
 )
 
 var (
-	InvalidRequestBody   = "invalid request body"
 	UserCreated          = "user created successfully"
 	InvalidEmailPassword = "invalid email address or password"
 	UnableSingup         = "unable to signup user"
@@ -22,16 +21,16 @@ type UserService interface {
 
 // login request
 type LoginRequest struct {
-	Email    string `query:"email"`
-	Password string `query:"password"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 // login request
 type SignupRequest struct {
-	FirstName string `query:"first_name"`
-	LastName  string `query:"last_name"`
-	Email     string `query:"email"`
-	Password  string `query:"password"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
 }
 
 // access token and refresh tokens to be returned
