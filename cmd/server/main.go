@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"microauth.io/core/internal/database"
+	"microauth.io/core/internal/email"
 	"microauth.io/core/internal/member"
 	"microauth.io/core/internal/organization"
 	"microauth.io/core/internal/transport/http"
@@ -21,7 +22,8 @@ func main() {
 	}
 	userService := user.New(db)
 	organizationService := organization.New(db)
-	memberService := member.New(db)
+	emailService := email.New("", "", "", "")
+	memberService := member.New(db, userService, emailService)
 	httpServer := http.New(userService, organizationService, memberService)
 	httpServer.RegisterHandlers()
 	httpServer.Start(port)

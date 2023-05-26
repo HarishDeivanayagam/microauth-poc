@@ -15,8 +15,9 @@ var (
 )
 
 type UserService interface {
+	GenerateAccessToken(context.Context, string) (string, string, error)
 	Login(context.Context, string, string) (string, string, error)
-	Signup(context.Context, string, string, string, string) (string, error)
+	CreateUser(context.Context, string, string, string, string) (string, error)
 }
 
 // login request
@@ -37,6 +38,32 @@ type SignupRequest struct {
 type Tokens struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type RefreshTokenRequest struct {
+	AccessToken string `json:"access_token"`
+}
+
+func (h *Http) RefreshTokenHandler(ctx echo.Context) error {
+	body := RefreshTokenRequest{}
+	err := ctx.Bind(&body)
+	if err != nil {
+		log.Println(err)
+		return ctx.String(http.StatusBadRequest, InvalidRequestBody)
+	}
+
+	// Generate a new access token and refresh token
+	newAccessToken, newRefreshToken, err := h.userService.GenerateAccessToken(ctx.Request().Context(), body.AccessToken)
+	if err != nil {
+		log.Println(err)
+		return ctx.String(http.StatusInternalServerError, InternalServerError)
+	}
+
+	tokens := Tokens{
+		AccessToken:  newAccessToken,
+		RefreshToken: newRefreshToken,
+	}
+	return ctx.JSON(http.StatusOK, tokens)
 }
 
 func (h *Http) LoginHandler(ctx echo.Context) error {
@@ -66,7 +93,7 @@ func (h *Http) SignupHandler(ctx echo.Context) error {
 		log.Println(err)
 		return ctx.String(http.StatusBadRequest, InvalidRequestBody)
 	}
-	_, err = h.userService.Signup(ctx.Request().Context(), body.FirstName, body.LastName, body.Email, body.Password)
+	_, err = h.userService.CreateUser(ctx.Request().Context(), body.FirstName, body.LastName, body.Email, body.Password)
 	if err != nil {
 		log.Println(err)
 		return ctx.String(http.StatusBadRequest, UnableSingup)

@@ -34,12 +34,15 @@ func (h *Http) Start(port string) {
 func (h *Http) RegisterHandlers() {
 	h.server.POST("/api/v1/users/signup", h.SignupHandler)
 	h.server.POST("/api/v1/users/login", h.LoginHandler)
+	h.server.POST("/api/v1/users/refresh", h.RefreshTokenHandler)
+	h.server.POST("/api/v1/organizations/accept-invite", h.AcceptInviteHandler)
 
 	// authenticated requests
 	authenticated := h.server.Group("/api/v1")
 	authenticated.Use(h.JWTMiddleware)
 	authenticated.GET("/organizations", h.FetchOrganizationsHandler)
 	authenticated.POST("/organizations", h.CreateOrganizationHandler)
-	authenticated.GET("/organizations/:organizationID/members/me", h.FetchAllMembersHandler)
-	authenticated.GET("/organizations/:organizationID/members", h.FetchMemberHandler)
+	authenticated.GET("/organizations/:organizationID/members/me", h.FetchMemberHandler)
+	authenticated.GET("/organizations/:organizationID/members", h.FetchAllMembersHandler)
+	authenticated.POST("/organizations/:organizationID/members", h.InviteMemberHandler)
 }

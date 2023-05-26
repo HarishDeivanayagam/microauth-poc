@@ -1,0 +1,1 @@
+ALTER TABLE member_invite ADD COLUMN code VARCHAR(255) NOT NULL;

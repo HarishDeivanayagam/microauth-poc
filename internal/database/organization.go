@@ -30,14 +30,14 @@ var (
 
 func (db *Database) GetOrganizationByUserID(ctx context.Context, userID string) ([]organization.Organization, error) {
 	query := `
-	SELECT id, name, domain, created_at, updated_at
-	FROM organizations
-	WHERE id IN (
-		SELECT organization_id
-		FROM members
-		WHERE user_id = $1
-	)
-`
+		SELECT id, name, domain, created_at, updated_at
+		FROM organizations
+		WHERE id IN (
+			SELECT organization_id
+			FROM members
+			WHERE user_id = $1
+		)
+	`
 
 	rows, err := db.client.QueryxContext(ctx, query, userID)
 	if err != nil {
